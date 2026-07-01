@@ -1,0 +1,55 @@
+name: Self-Evolving Agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      goal:
+        description: "هدف مخصص للوكيل (اختياري)"
+        required: false
+        default: ""
+  schedule:
+    # كل يوم الساعة 03:00 UTC — عدّل حسب حاجتك
+    - cron: "0 3 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Configure git identity
+        run: |
+          git config user.name "self-evolving-agent"
+          git config user.email "agent@users.noreply.github.com"
+
+      - name: Run agent
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          REPO_PATH: ${{ github.workspace }}
+        run: |
+          python main.py "${{ github.event.inputs.goal }}"
+
+      - name: Push changes (if any)
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git diff --cached --quiet || git commit -m "chore: agent housekeeping commit"
+            git push
+          else
+            echo "لا توجد تغييرات لدفعها."
+          fi
+          
