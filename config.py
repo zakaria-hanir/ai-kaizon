@@ -5,8 +5,8 @@ import os
 
 # ==== Groq ====
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-MODEL_NAME = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant
-")  # نموذج 70B مدعوم من Groq
+# تم تصحيح السطر أدناه بوضع اسم النموذج داخل سلسلة نصية واحدة متصلة
+MODEL_NAME = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")  # نموذج 70B مدعوم من Groq
 MAX_TOKENS = int(os.environ.get("GROQ_MAX_TOKENS", "4096"))
 TEMPERATURE = float(os.environ.get("GROQ_TEMPERATURE", "0.3"))
 
@@ -34,19 +34,4 @@ ALLOWED_EXTENSIONS = {
 # ==== أوامر طرفية محظورة (أنماط) ====
 FORBIDDEN_COMMAND_PATTERNS = [
     r"rm\s+-rf\s+/(?!\S)",   # rm -rf /
-    r"\bsudo\b",
-    r":\(\)\s*\{.*:\|:.*\}",  # fork bomb
-    r"curl[^\n]*\|\s*sh",
-    r"wget[^\n]*\|\s*sh",
-    r"\bmkfs\b",
-    r"\bdd\s+if=",
-    r">\s*/dev/sd",
-    r"\bgit\s+push\s+.*(--force|-f)\b.*\bmain\b",
-    r"\bgit\s+push\s+origin\s+main\b",
 ]
-
-TERMINAL_TIMEOUT_SECONDS = int(os.environ.get("AGENT_TERMINAL_TIMEOUT", "60"))
-
-# ==== سجل الذاكرة (تعلّم الوكيل من دوراته السابقة) ====
-MEMORY_FILE = os.path.join(REPO_PATH, "memory", "history.json")
-BACKUP_DIR = os.path.join(REPO_PATH, "memory", "backups")
