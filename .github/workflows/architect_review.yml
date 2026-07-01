@@ -1,0 +1,40 @@
+name: Weekly Architect Review
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 1"  # كل اثنين 05:00 UTC، قبل التقرير الأسبوعي بساعة
+
+permissions:
+  contents: write
+
+jobs:
+  architect_review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Configure git identity
+        run: |
+          git config user.name "self-evolving-agent"
+          git config user.email "agent@users.noreply.github.com"
+
+      - name: Run architect review (rewrites PLAN.md)
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          REPO_PATH: ${{ github.workspace }}
+        run: python scripts/architect_review.py
+
+      - name: Commit updated plan
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add PLAN.md
+            git commit -m "docs: weekly architect review — plan revised"
+            git push
+          fi

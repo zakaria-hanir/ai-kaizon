@@ -1,0 +1,36 @@
+name: Weekly Agent Report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"  # كل اثنين 06:00 UTC
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Configure git identity
+        run: |
+          git config user.name "self-evolving-agent"
+          git config user.email "agent@users.noreply.github.com"
+
+      - name: Generate report
+        env:
+          REPO_PATH: ${{ github.workspace }}
+        run: python scripts/generate_weekly_report.py
+
+      - name: Commit report
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add reports/
+            git commit -m "docs: weekly agent report"
+            git push
+          fi
