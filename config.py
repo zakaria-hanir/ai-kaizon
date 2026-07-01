@@ -5,7 +5,7 @@ import os
 
 # ==== Groq ====
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-MODEL_NAME = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")  # نموذج 70B مدعوم من Groq
+MODEL_NAME = os.environ.get("GROQ_MODEL", "llama-3.3-8b-instant")  # نموذج 70B مدعوم من Groq
 MAX_TOKENS = int(os.environ.get("GROQ_MAX_TOKENS", "4096"))
 TEMPERATURE = float(os.environ.get("GROQ_TEMPERATURE", "0.3"))
 
